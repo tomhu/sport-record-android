@@ -1,7 +1,9 @@
 package com.example.sportrecord.ui.theme
 
 import android.app.Activity
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
@@ -35,7 +37,7 @@ fun SportRecordTheme(content: @Composable () -> Unit) {
     }
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = androidx.compose.material3.Typography(),
         content = content
     )
 }

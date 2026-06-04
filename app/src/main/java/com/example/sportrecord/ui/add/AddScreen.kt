@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sportrecord.model.*
 import com.example.sportrecord.ui.theme.*
+import androidx.compose.ui.graphics.Color
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

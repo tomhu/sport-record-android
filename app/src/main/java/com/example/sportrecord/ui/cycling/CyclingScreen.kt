@@ -28,6 +28,7 @@ import com.amap.api.maps2d.model.*
 import com.amap.api.maps2d.MapView
 import com.example.sportrecord.tracker.GpsTracker
 import com.example.sportrecord.ui.theme.*
+import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.*
 import android.view.View
 import androidx.compose.runtime.DisposableEffect
@@ -47,9 +48,8 @@ fun CyclingScreen(
     val lm = remember { context.getSystemService<LocationManager>() }
     val tracker = remember {
         GpsTracker {
-            // 使用 Android LocationManager 获取定位
             try {
-                @SuppressLint("MissingPermission")
+                @Suppress("DEPRECATION")
                 suspendCoroutine<Location?> { cont ->
                     val providers = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
                     var best: Location? = null
@@ -122,7 +122,7 @@ fun CyclingScreen(
         ) {
             Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("←", fontSize = 22.sp, modifier = Modifier.clickable {
-                    if (hasStarted && stats.state != GpsTracker.State.IDLE) {
+                    if (hasStarted && stats.trackerState != GpsTracker.TrackerState.IDLE) {
                         showFinish = true
                     } else onBack()
                 })
@@ -162,7 +162,7 @@ fun CyclingScreen(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (!hasStarted || stats.state == GpsTracker.State.IDLE) {
+            if (!hasStarted || stats.trackerState == GpsTracker.TrackerState.IDLE) {
                 Button(
                     onClick = { hasStarted = true; tracker.start(scope) },
                     modifier = Modifier.height(60.dp),
@@ -187,13 +187,13 @@ fun CyclingScreen(
                 Spacer(Modifier.width(32.dp))
 
                 // 暂停/恢复
-                if (stats.state == GpsTracker.State.TRACKING) {
+                if (stats.trackerState == GpsTracker.TrackerState.TRACKING) {
                     FloatingActionButton(
                         onClick = { tracker.pause() },
                         modifier = Modifier.size(72.dp),
                         containerColor = Amber
                     ) { Text("⏸", fontSize = 24.sp) }
-                } else if (stats.state == GpsTracker.State.PAUSED) {
+                } else if (stats.trackerState == GpsTracker.TrackerState.PAUSED) {
                     FloatingActionButton(
                         onClick = { tracker.resume() },
                         modifier = Modifier.size(72.dp),

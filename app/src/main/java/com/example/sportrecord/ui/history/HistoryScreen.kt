@@ -94,9 +94,9 @@ fun HistoryScreen(records: List<SportRecord>) {
             // 汇总
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    SummaryCard("🔥", "$totalCal", "消耗千卡", Primary)
-                    SummaryCard("🕐", "$totalDur", "运动分钟", Blue)
-                    SummaryCard("🏋", "$totalCnt", "运动次数", Amber)
+                    SummaryCard("🔥", "$totalCal", "消耗千卡", Primary, Modifier.weight(1f))
+                    SummaryCard("🕐", "$totalDur", "运动分钟", Blue, Modifier.weight(1f))
+                    SummaryCard("🏋", "$totalCnt", "运动次数", Amber, Modifier.weight(1f))
                 }
             }
 
@@ -152,8 +152,8 @@ fun HistoryScreen(records: List<SportRecord>) {
 }
 
 @Composable
-private fun SummaryCard(emoji: String, value: String, label: String, color: androidx.compose.ui.graphics.Color) {
-    Surface(Modifier.weight(1f), shape = RoundedCornerShape(16.dp), shadowElevation = 1.dp) {
+private fun SummaryCard(emoji: String, value: String, label: String, color: androidx.compose.ui.graphics.Color, modifier: Modifier = Modifier) {
+    Surface(modifier, shape = RoundedCornerShape(16.dp), shadowElevation = 1.dp) {
         Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(emoji, fontSize = 24.sp)
             Text(value, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = color)

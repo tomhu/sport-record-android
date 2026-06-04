@@ -15,11 +15,11 @@ import kotlin.math.*
  */
 class GpsTracker(private val locationProvider: suspend () -> Location?) {
 
-    enum class State { IDLE, TRACKING, PAUSED }
+    enum class TrackerState { IDLE, TRACKING, PAUSED }
 
     // ── 实时统计 ──
     data class Stats(
-        val state: State = State.IDLE,
+        val trackerState: TrackerState = TrackerState.IDLE,
         val distKm: Double = 0.0,
         val durationSec: Long = 0,
         val curSpeedKmh: Double = 0.0,
@@ -56,12 +56,12 @@ class GpsTracker(private val locationProvider: suspend () -> Location?) {
     // ── 开始 ──
     fun start(scope: CoroutineScope) {
         reset()
-        _stats.value = _stats.value.copy(state = State.TRACKING)
+        _stats.value = _stats.value.copy(trackerState = TrackerState.TRACKING)
         startTs = System.currentTimeMillis()
 
         job = scope.launch(Dispatchers.IO) {
-            while (isActive && _stats.value.state != State.IDLE) {
-                if (_stats.value.state == State.TRACKING) {
+            while (isActive && _stats.value.trackerState != TrackerState.IDLE) {
+                if (_stats.value.trackerState == TrackerState.TRACKING) {
                     val loc = locationProvider()
                     if (loc != null) handleLocation(loc)
                 }
@@ -72,21 +72,21 @@ class GpsTracker(private val locationProvider: suspend () -> Location?) {
 
     // ── 暂停 / 恢复 ──
     fun pause() {
-        if (_stats.value.state != State.TRACKING) return
-        _stats.value = _stats.value.copy(state = State.PAUSED)
+        if (_stats.value.trackerState != TrackerState.TRACKING) return
+        _stats.value = _stats.value.copy(trackerState = TrackerState.PAUSED)
         pauseStart = System.currentTimeMillis()
     }
     fun resume() {
-        if (_stats.value.state != State.PAUSED) return
+        if (_stats.value.trackerState != TrackerState.PAUSED) return
         pausedMs += System.currentTimeMillis() - pauseStart
-        _stats.value = _stats.value.copy(state = State.TRACKING)
+        _stats.value = _stats.value.copy(trackerState = TrackerState.TRACKING)
     }
 
     // ── 结束 ──
     fun stop(): Stats {
-        if (_stats.value.state == State.PAUSED) pausedMs += System.currentTimeMillis() - pauseStart
+        if (_stats.value.trackerState == TrackerState.PAUSED) pausedMs += System.currentTimeMillis() - pauseStart
         job?.cancel()
-        _stats.value = _stats.value.copy(state = State.IDLE)
+        _stats.value = _stats.value.copy(trackerState = TrackerState.IDLE)
         return _stats.value
     }
 
@@ -141,7 +141,7 @@ class GpsTracker(private val locationProvider: suspend () -> Location?) {
         val avgSpd = if (activeSec > 0) (totalDist / activeMs) * 3600.0 else 0.0
 
         _stats.value = Stats(
-            state = State.TRACKING,
+            trackerState = TrackerState.TRACKING,
             distKm = kotlin.math.round(totalDist / 10.0) / 100.0, // 米→km, 保留2位
             durationSec = activeSec,
             curSpeedKmh = _stats.value.curSpeedKmh,

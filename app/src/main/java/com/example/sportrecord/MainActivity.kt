@@ -149,7 +149,7 @@ class MainActivity : ComponentActivity() {
                                 duration = (stats.durationSec / 60).toInt(),
                                 distance = stats.distKm, date = now,
                                 calories = CalorieEngine.byDuration(6.0, appState?.weight ?: 65, (stats.durationSec / 60).toInt()),
-                                met = 6.0, caloriePerKm = 0.38, hasTrack = true
+                                met = 6.0, hasTrack = true
                             )
                             repo.addRecord(record)
 

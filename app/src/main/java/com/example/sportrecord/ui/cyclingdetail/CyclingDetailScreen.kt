@@ -1,7 +1,7 @@
 package com.example.sportrecord.ui.cyclingdetail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +17,10 @@ import com.amap.api.maps2d.MapView
 import com.example.sportrecord.data.entity.Track
 import com.example.sportrecord.ui.components.LineChart
 import com.example.sportrecord.ui.theme.*
+import java.util.Locale
+
+private fun formatDouble(d: Double) = String.format(Locale.US, "%.1f", d)
+private fun formatDouble2(d: Double) = String.format(Locale.US, "%.2f", d)
 
 /** 解码路径串 → LatLng 列表 */
 fun decodeTrack(encoded: String): List<com.amap.api.maps2d.model.LatLng> {
@@ -85,10 +89,10 @@ fun CyclingDetailScreen(track: Track?) {
             Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            StatCard("📏", "${"%.2f".format(distKm)}", "公里")
-            StatCard("🕐", durStr, "时长")
-            StatCard("⚡", "${"%.1f".format(track.avgSpeed)}", "均速 km/h")
-            StatCard("🚀", "${"%.1f".format(track.maxSpeed)}", "极速 km/h")
+            StatCard("📏", formatDouble2(distKm), "公里", Modifier.weight(1f))
+            StatCard("🕐", durStr, "时长", Modifier.weight(1f))
+            StatCard("⚡", formatDouble(track.avgSpeed), "均速 km/h", Modifier.weight(1f))
+            StatCard("🚀", formatDouble(track.maxSpeed), "极速 km/h", Modifier.weight(1f))
         }
 
         // 速度曲线
@@ -111,8 +115,8 @@ fun CyclingDetailScreen(track: Track?) {
 }
 
 @Composable
-private fun StatCard(emoji: String, v: String, l: String) {
-    Surface(Modifier.weight(1f), shape = RoundedCornerShape(16.dp), shadowElevation = 1.dp) {
+private fun StatCard(emoji: String, v: String, l: String, modifier: Modifier = Modifier) {
+    Surface(modifier, shape = RoundedCornerShape(16.dp), shadowElevation = 1.dp) {
         Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(emoji, fontSize = 20.sp)
             Text(v, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)

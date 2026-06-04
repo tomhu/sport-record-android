@@ -11,14 +11,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sportrecord.ui.theme.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     existingUsers: List<Pair<String/*id*/, Pair<String/*name*/, String/*avatar*/>>>,

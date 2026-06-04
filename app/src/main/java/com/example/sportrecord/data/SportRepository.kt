@@ -60,5 +60,5 @@ class SportRepository(private val db: AppDatabase) {
     }
 
     // ── 工具 ──
-    fun genId() = "${System.currentTimeMillis().toString(36)}-${(0..5).map { ('a'..'z').random() }.joinString("")}"
+    fun genId() = "${System.currentTimeMillis().toString(36)}-${(0..5).map { ('a'..'z').random() }.joinToString("")}"
 }

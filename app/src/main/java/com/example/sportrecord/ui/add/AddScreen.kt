@@ -29,7 +29,8 @@ import java.time.format.DateTimeFormatter
 fun AddScreen(
     weight: Int,
     onSave: (sport: SportDef, date: String, duration: Int, count: Int, distance: Double, calories: Int) -> Unit,
-    onCycling: () -> Unit
+    onCycling: () -> Unit,
+    onBack: () -> Unit
 ) {
     var selectedSport by remember { mutableStateOf<SportDef?>(null) }
     var date by remember { mutableStateOf(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)) }
@@ -57,6 +58,9 @@ fun AddScreen(
         // 标题
         TopAppBar(
             title = { Text("添加记录", fontWeight = FontWeight.Bold) },
+            navigationIcon = {
+                TextButton(onClick = onBack) { Text("取消", color = TextSecondary) }
+            },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Surface)
         )
 
@@ -68,18 +72,18 @@ fun AddScreen(
             item {
                 Text("选择运动项目", fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = TextSecondary)
                 Spacer(Modifier.height(8.dp))
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth().heightIn(max = 320.dp),
-                    userScrollEnabled = false
+            }
+            // 使用 chunked(3) 分行渲染，避免嵌套 LazyGrid 的滚动冲突
+            items(SportsData.allSports.chunked(3)) { row ->
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(SportsData.allSports) { sport ->
+                    row.forEach { sport ->
                         val selected = selectedSport?.key == sport.key
                         Surface(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .weight(1f)
                                 .clickable {
                                     if (sport.key == "cycling") { onCycling(); return@clickable }
                                     selectedSport = sport
@@ -89,11 +93,11 @@ fun AddScreen(
                             border = if (selected) androidx.compose.foundation.BorderStroke(2.dp, Primary) else null
                         ) {
                             Column(
-                                Modifier.padding(16.dp),
+                                Modifier.padding(12.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text(sport.icon, fontSize = 28.sp)
-                                Text(sport.name.replace(Regex("[^一-龥]"), ""), fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                                Text(sport.icon, fontSize = 24.sp)
+                                Text(sport.name.replace(Regex("[^一-龥]"), ""), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                                 Text(
                                     if (sport.caloriePerKm > 0) "计时/距离"
                                     else when(sport.measureType) { "duration" -> "计时"; "count" -> "计次"; else -> "计时+计次" },
@@ -102,7 +106,12 @@ fun AddScreen(
                             }
                         }
                     }
+                    // 填充不足3个的空白
+                    repeat(3 - row.size) {
+                        Spacer(Modifier.weight(1f))
+                    }
                 }
+                Spacer(Modifier.height(12.dp))
             }
 
             if (selectedSport != null) {

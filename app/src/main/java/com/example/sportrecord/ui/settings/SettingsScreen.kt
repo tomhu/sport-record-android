@@ -111,6 +111,36 @@ fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
         }
 
+        // 运动类型管理
+        item {
+            Surface(shape = RoundedCornerShape(20.dp), shadowElevation = 2.dp) {
+                Column(Modifier.padding(24.dp)) {
+                    Text("📋 运动类型管理", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("点击「编辑」可修改 MET 值、计量方式等参数", fontSize = 12.sp, color = TextMuted)
+                    Spacer(Modifier.height(12.dp))
+                    com.example.sportrecord.model.SportsData.allSports.forEach { sport ->
+                        Row(
+                            Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(Modifier.size(40.dp).background(PrimaryLight, RoundedCornerShape(20.dp)),
+                                contentAlignment = Alignment.Center) {
+                                Text(sport.icon, fontSize = 18.sp)
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(sport.name.replace(Regex("[^一-龥]"), ""), fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                                Text("MET ${sport.met} · ${when(sport.measureType){ "duration" -> "计时"; "count" -> "计次"; else -> "计时+计次" }}",
+                                    fontSize = 11.sp, color = TextMuted)
+                            }
+                        }
+                        Divider(color = Color(0xFFF1F5F9))
+                    }
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+        }
+
         // 数据管理
         item {
             Surface(shape = RoundedCornerShape(20.dp), shadowElevation = 2.dp) {

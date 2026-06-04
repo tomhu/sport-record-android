@@ -132,7 +132,8 @@ class MainActivity : ComponentActivity() {
                             screen = "home"
                         }
                     },
-                    onCycling = { screen = "cycling" }
+                    onCycling = { screen = "cycling" },
+                    onBack = { screen = "home" }
                 )
             }
 
@@ -185,17 +186,18 @@ class MainActivity : ComponentActivity() {
             else -> {
                 // 主界面：底部3Tab导航
                 var tab by remember { mutableStateOf(0) }
-                val tabs = listOf("🏃 记录", "📊 统计", "⚙ 设置")
+                data class Tab(val emoji: String, val text: String)
+                val tabs = listOf(Tab("🏃", "记录"), Tab("📊", "统计"), Tab("⚙", "设置"))
 
                 Scaffold(
                     bottomBar = {
                         NavigationBar(containerColor = Surface) {
-                            tabs.forEachIndexed { i, label ->
+                            tabs.forEachIndexed { i, t ->
                                 NavigationBarItem(
                                     selected = tab == i,
                                     onClick = { tab = i },
-                                    icon = { Text(label.take(2), fontSize = 18.sp) },
-                                    label = { Text(label, fontWeight = if (tab == i) FontWeight.Bold else FontWeight.Normal) },
+                                    icon = { Text(t.emoji, fontSize = 20.sp) },
+                                    label = { Text(t.text, fontWeight = if (tab == i) FontWeight.Bold else FontWeight.Normal, fontSize = 12.sp) },
                                     colors = NavigationBarItemDefaults.colors(
                                         selectedIconColor = Primary, indicatorColor = PrimaryLight
                                     )

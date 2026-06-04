@@ -53,6 +53,6 @@ data class Track(
 data class AppState(
     @PrimaryKey val key: String = "state",
     val currentUserId: String = "",
-    val weight: Int = 65,
+    val weight: Int = 90,
     val adminViewMode: String = "self"   // "self" | "all" | userId
 )

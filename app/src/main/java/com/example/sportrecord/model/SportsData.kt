@@ -12,7 +12,8 @@ data class SportDef(
 )
 
 object SportsData {
-    val allSports = listOf(
+    // 内置运动类型不可变
+    val presetSports = listOf(
         // 有氧
         SportDef("walking",      "🚶 步行",         "🚶",  met=3.0, measureType="duration", caloriePerKm=0.62),
         SportDef("running",      "🏃 跑步(慢跑)",    "🏃",  met=8.0, measureType="duration", caloriePerKm=0.97),
@@ -42,7 +43,29 @@ object SportsData {
         SportDef("dancing",      "💃 跳舞",         "💃",  met=4.8, measureType="duration")
     )
 
+    // 自定义运动（内存存储，重启丢失；正式版应持久化到 Room）
+    private val _customSports = mutableListOf<SportDef>()
+    val customSports: List<SportDef> get() = _customSports.toList()
+
+    // 运动编辑覆盖
+    var customMet: Double = 0.0
+    var customMeasureType: String = ""
+    var customKcalPerUnit: Double = 0.0
+    var customCaloriePerKm: Double = 0.0
+
+    val allSports: List<SportDef>
+        get() = presetSports + _customSports
+
     fun getByKey(key: String) = allSports.find { it.key == key }
+
+    fun addCustom(name: String, icon: String, met: Double, measureType: String, kcalPerUnit: Double) {
+        val key = "custom_${System.currentTimeMillis()}"
+        _customSports.add(SportDef(key, "$icon $name", icon, met, measureType, kcalPerUnit))
+    }
+
+    fun removeCustom(key: String) {
+        _customSports.removeAll { it.key == key }
+    }
 }
 
 /** 热量计算引擎 */

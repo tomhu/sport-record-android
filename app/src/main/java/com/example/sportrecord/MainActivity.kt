@@ -116,7 +116,7 @@ class MainActivity : ComponentActivity() {
 
             "add" -> {
                 AddScreen(
-                    weight = appState?.weight ?: 65,
+                    weight = appState?.weight ?: 90,
                     onSave = { sport, date, dur, cnt, dist, cal ->
                         scope.launch {
                             val uid = currentUser?.userId ?: ""
@@ -149,7 +149,7 @@ class MainActivity : ComponentActivity() {
                                 sportName = "🚴 骑行", icon = "🚴",
                                 duration = (stats.durationSec / 60).toInt(),
                                 distance = stats.distKm, date = now,
-                                calories = CalorieEngine.byDuration(6.0, appState?.weight ?: 65, (stats.durationSec / 60).toInt()),
+                                calories = CalorieEngine.byDuration(6.0, appState?.weight ?: 90, (stats.durationSec / 60).toInt()),
                                 met = 6.0, hasTrack = true
                             )
                             repo.addRecord(record)
@@ -219,16 +219,28 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                             1 -> HistoryScreen(records)
-                            2 -> SettingsScreen(
-                                currentUser, appState?.weight ?: 65,
-                                appState?.adminViewMode ?: "self", users, records.size,
-                                onWeightSave = { w -> scope.launch { repo.setWeight(w); refreshData() } },
-                                onSwitchUser = { scope.launch { repo.switchUser(""); refreshData(); screen = "login" } },
-                                onViewModeChange = { mode -> scope.launch { repo.setAdminMode(mode); refreshData() } },
-                                onClearRecords = {
-                                    scope.launch { repo.deleteAllRecords(); refreshData() }
-                                }
-                            )
+                            2 -> {
+                                val customSports = remember { mutableStateOf(SportsData.customSports) }
+                                SettingsScreen(
+                                    currentUser, appState?.weight ?: 90,
+                                    appState?.adminViewMode ?: "self", users, records.size,
+                                    customSports = customSports.value,
+                                    onWeightSave = { w -> scope.launch { repo.setWeight(w); refreshData() } },
+                                    onSwitchUser = { scope.launch { repo.switchUser(""); refreshData(); screen = "login" } },
+                                    onViewModeChange = { mode -> scope.launch { repo.setAdminMode(mode); refreshData() } },
+                                    onClearRecords = { scope.launch { repo.deleteAllRecords(); refreshData() } },
+                                    onEditSport = { _, _, _, _, _ -> },
+                                    onResetSport = { },
+                                    onAddCustomSport = { name, icon, met, mt, kcal ->
+                                        SportsData.addCustom(name, icon, met.toDoubleOrNull() ?: 3.0, mt, kcal.toDoubleOrNull() ?: 0.0)
+                                        customSports.value = SportsData.customSports
+                                    },
+                                    onDeleteCustomSport = { sport ->
+                                        SportsData.removeCustom(sport.key)
+                                        customSports.value = SportsData.customSports
+                                    }
+                                )
+                            }
                         }
                     }
                 }
